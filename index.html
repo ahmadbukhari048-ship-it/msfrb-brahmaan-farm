@@ -171,4 +171,30 @@
         topBtn.onclick = () => { window.scrollTo({top:0, behavior:'smooth'}); };
     </script>
 </body>
+    <div id="visitor-counter" style="position:fixed; bottom:15px; right:15px; background:#111; color:#fff; padding:8px 14px; border-radius:20px; font-family:sans-serif; font-size:13px; z-index:9999;">
+  🟢 <span id="online-count">0</span> Online | 👁️ <span id="total-count">0</span> Total
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoOV_vLJ_7N41SeyE2TdI0KBaY_gqTUXE",
+    authDomain: "msfrb-brahman-farm.firebaseapp.com",
+    projectId: "msfrb-brahman-farm",
+    storageBucket: "msfrb-brahman-farm.firebasestorage.app",
+    messagingSenderId: "393123856855",
+    appId: "1:393123856855:web:e26f7358c576801f50cb92",
+    measurementId: "G-0MWLQ3VS72"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const liveRef = doc(db, "visitors", "live");
+  const snap = await getDoc(liveRef);
+  if (!snap.exists()) { await setDoc(liveRef, { online: 0, total: 1 }); } else { await updateDoc(liveRef, { total: increment(1) }); }
+  const presenceRef = await addDoc(collection(db, "online_users"), { time: Date.now() });
+  await updateDoc(liveRef, { online: increment(1) });
+  window.addEventListener("beforeunload", async () => { try { await deleteDoc(presenceRef); await updateDoc(liveRef, { online: increment(-1) }); } catch(e){} });
+  onSnapshot(liveRef, (d) => { if (d.exists()) { document.getElementById("online-count").innerText = d.data().online || 0; document.getElementById("total-count").innerText = d.data().total || 0; } });
+</script>
 </html>
