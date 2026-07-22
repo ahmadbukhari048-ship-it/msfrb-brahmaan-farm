@@ -248,7 +248,4 @@
       onSnapshot(liveRef, (d) => { if (d.exists()) { document.getElementById("online-count").innerText = d.data().online || 0; document.getElementById("total-count").innerText = d.data().total || 0; } });
     </script>
 </body>
-</html> { await deleteDoc(presenceRef); await updateDoc(liveRef, { online: increment(-1) }); } catch(e){} });
-  onSnapshot(liveRef, (d) => { if (d.exists()) { document.getElementById("online-count").innerText = d.data().online || 0; document.getElementById("total-count").innerText = d.data().total || 0; } });
-</script>
-</html>
+</html> 
